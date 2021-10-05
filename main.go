@@ -8,32 +8,24 @@ import (
 
 func main() {
 
-	err := setTZtoUTC()
-	if err != nil {
-		panic("could not set time.Local to UTC")
+	// Set local time to UTC
+	if utc, err := time.LoadLocation("UTC"); err != nil {
+		panic("Cannot set time.Local to UTC: " + err.Error())
+	} else {
+		time.Local = utc
 	}
 
-	// If a command-line argument was passed,
-	// convert to a time.Duration value
-	var offset time.Duration
-	if len(os.Args) == 2 {
-		offset, err = time.ParseDuration(os.Args[1])
-		if err != nil {
-			fmt.Printf("error: %s\n\n", err.Error())
-			fmt.Printf("usage: %s [ timeOffset ]\n", os.Args[0])
-			os.Exit(1)
+	if len(os.Args) == 1 {
+		fmt.Println(time.Now().Format(time.RFC3339))
+	} else {
+		for _, arg := range os.Args[1:] {
+			if offset, err := time.ParseDuration(arg); err != nil {
+				fmt.Printf("error parsing timeOffset: %s\n\n", err.Error())
+				fmt.Printf("usage: %s <timeOffSet>\n", os.Args[0])
+				os.Exit(1)
+			} else {
+				fmt.Println(time.Now().Add(offset).Format(time.RFC3339))
+			}
 		}
 	}
-	fmt.Println(time.Now().Add(offset).Format(time.RFC3339))
-}
-
-// setTZtoUTC sets the time.Local value to UTC
-func setTZtoUTC() error {
-	utc, err := time.LoadLocation("UTC")
-	if err != nil {
-		return err
-	}
-
-	time.Local = utc
-	return nil
 }
