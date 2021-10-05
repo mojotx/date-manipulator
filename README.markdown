@@ -6,7 +6,7 @@ Simple application for generating
 
 Install the program like this:
 ```shell
-go get -v github.com/mojotx/date-manipulator
+go install github.com/mojotx/date-manipulator@latest
 ```
 
 To get the current UTC timestamp in RFC3339 format, just run the binary:
