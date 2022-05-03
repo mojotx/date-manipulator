@@ -15,17 +15,20 @@ func main() {
 		time.Local = utc
 	}
 
+	// If no arguments, just print now
 	if len(os.Args) == 1 {
 		fmt.Println(time.Now().Format(time.RFC3339))
-	} else {
-		for _, arg := range os.Args[1:] {
-			if offset, err := time.ParseDuration(arg); err != nil {
-				fmt.Printf("error parsing timeOffset: %s\n\n", err.Error())
-				fmt.Printf("usage: %s <timeOffSet>\n", os.Args[0])
-				os.Exit(1)
-			} else {
-				fmt.Println(time.Now().Add(offset).Format(time.RFC3339))
-			}
+		return
+	}
+
+	// process each duration
+	for _, arg := range os.Args[1:] {
+		offset, err := time.ParseDuration(arg)
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "error parsing time offset: %s\n", err.Error())
+			continue
 		}
+
+		fmt.Println(time.Now().Add(offset).Format(time.RFC3339))
 	}
 }
